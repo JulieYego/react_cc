@@ -1,5 +1,6 @@
 import './App.css';
 import searchIcon from './search.svg';
+import MovieCard from './MovieCard';
 import { useState, useEffect } from 'react';
 
 /*const Person = (props) =>{
@@ -12,14 +13,6 @@ import { useState, useEffect } from 'react';
   );
 }*/
 const API_URL = 'http://www.omdbapi.com?apikey=7881c973'
-
-const movie1 = {
-  "Title": "Superman, Spiderman or Batman",
-  "Year": "2011",
-  "imdbID": "tt2084949",
-  "Type": "movie",
-  "Poster": "https://m.media-amazon.com/images/M/MV5BMjQ4MzcxNDU3N15BMl5BanBnXkFtZTgwOTE1MzMxNzE@._V1_SX300.jpg"
-}
 
 const App = () => {
   /*const name = 'Julie'
@@ -60,10 +53,14 @@ const App = () => {
 
   //7881c973
 
+  // State
+  const [movies,setMovies] = useState([]);
+  const [searchTerm,setSearchTerm] = useState('');
+
   const searchMovies = async(title) => {
     const response = await fetch(`${API_URL}&s=${title}`);
     const data = await response.json()
-    console.log(data.Search);
+    setMovies(data.Search);
   }
   
   useEffect(() => {
@@ -77,33 +74,34 @@ const App = () => {
       <div className='search'>
         <input
         placeholder = 'Search for Movie'
-        value = 'Superman'
-        onChange={() => {}}
+        value = {searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <img
           src = {searchIcon}
           alt = 'Search'
-          onClick={() => {}}
+          onClick={() => searchMovies(searchTerm)}
         />
       </div>
 
-      <div className='container'>
-        <div className='movie'>
-          <div>
-            <p>{movie1.Year}</p>
+      {
+        movies?.length > 0 ? (
+          <div className='container'>
+            {
+              movies.map((movie) => (
+                <MovieCard movie={movie} />
+              ))
+            }
           </div>
-          <div>
-            <img
-              src = {movie1.Poster !== 'N/A' ? movie1.Poster : 'https://via.placeholder.com/400'}
-              alt = {movie1.Title}/>
+        ):
+        (
+          <div className='empty'>
+            <h2>No movie found</h2>
           </div>
-          <div>
-            <span>{movie1.Type}</span>
-            <h3>{movie1.Title}</h3>
-          </div>
-        </div>
-      </div>
+        )
+      }
+
     </div>
   )
 }
